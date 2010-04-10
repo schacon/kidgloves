@@ -82,13 +82,14 @@ module Rack
               line.strip!
               break if line.size == 0
               key, val = line.split(": ")
+              key = key.upcase.gsub('-', '_')
               req[key] = val
             end
 
             # parse the body
             body = ''
-            if (len = req['Content-Length']) && ["POST", "PUT"].member?(method)
-              body = socket.read(len)
+            if (len = req['CONTENT_LENGTH']) && ["POST", "PUT"].member?(method)
+              body = socket.read(len.to_i)
             end
 
             # process the request
@@ -113,7 +114,6 @@ module Rack
         env.delete "HTTP_CONTENT_TYPE"
         env.delete "HTTP_CONTENT_LENGTH"
         env["HTTP_VERSION"] ||= env["SERVER_PROTOCOL"]
-        env["PATH_INFO"] = env["REQUEST_PATH"]
         env["QUERY_STRING"] ||= ""
         env["SCRIPT_NAME"] = ""
 
