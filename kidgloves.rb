@@ -1,14 +1,9 @@
-require 'rubygems'
 require 'socket'
 require 'stringio'
-require 'rack'
-require 'rack/content_length'
-require 'rack/chunked'
-require 'pp'
 
 module Rack
   module Handler
-    class DumbServer
+    class KidGloves
       attr_accessor :app
 
       StatusMessage = {
@@ -73,30 +68,33 @@ module Rack
           begin
 
             req = {}
+
+            # parse the request line
             request = socket.gets
             method, path, version = request.split(" ")
             req["REQUEST_METHOD"] = method
             info, query = path.split("?")
             req["PATH_INFO"] = info
             req["QUERY_STRING"] = query
+
+            # parse the headers
             while (line = socket.gets)
               line.strip!
               break if line.size == 0
               key, val = line.split(": ")
               req[key] = val
             end
-            pp req
 
+            # parse the body
             body = ''
             if (len = req['Content-Length']) && ["POST", "PUT"].member?(method)
               body = socket.read(len)
             end
 
+            # process the request
             process_request(req, body, socket)
 
-            puts "DONE"
           ensure
-            # no matter what we have to put this thread on the bad list
             socket.close if not socket.closed?
           end
         end
@@ -146,12 +144,3 @@ module Rack
     end
   end
 end
-
-
-class HelloWorld
-  def call(env)
-    [200, {"Content-Type" => "text/html"}, ["Hello world!"]]
-  end
-end
-
-Rack::Handler::DumbServer.run HelloWorld.new
