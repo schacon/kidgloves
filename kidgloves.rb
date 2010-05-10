@@ -49,14 +49,14 @@ module Rack
         505 => 'HTTP Version Not Supported'
       }
 
-      def self.run(app, options=nil)
-        new(app).listen
+      def self.run(app, options={})
+        new(app, options).listen
       end
 
-      def initialize(app, host='0.0.0.0', port=8089)
+      def initialize(app, options={})
         @app = app
-        @host = host
-        @port = port
+        @host = options[:Host] || '0.0.0.0'
+        @port = options[:Port] || 8089
       end
 
       def listen
