@@ -83,7 +83,7 @@ module Rack
               break if line.size == 0
               key, val = line.split(": ")
               key = key.upcase.gsub('-', '_')
-              key = "HTTP_#{key}"
+              key = "HTTP_#{key}" if !%w[CONTENT_TYPE CONTENT_LENGTH].include?(key)
               req[key] = val
             end
 
