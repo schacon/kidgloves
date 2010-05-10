@@ -83,6 +83,7 @@ module Rack
               break if line.size == 0
               key, val = line.split(": ")
               key = key.upcase.gsub('-', '_')
+              key = "HTTP_#{key}"
               req[key] = val
             end
 
