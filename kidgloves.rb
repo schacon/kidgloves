@@ -53,13 +53,15 @@ module Rack
         new(app).listen
       end
 
-      def initialize(app)
+      def initialize(app, host='0.0.0.0', port=8089)
         @app = app
+        @host = host
+        @port = port
       end
 
       def listen
-        log 'Starting server on 0.0.0.0:8089'
-        server = TCPServer.new('0.0.0.0', 8089)
+        log "Starting server on #{@host}:#{@port}"
+        server = TCPServer.new(@host, @port)
 
         loop do
           socket = server.accept
