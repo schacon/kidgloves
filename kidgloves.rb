@@ -112,8 +112,6 @@ module Rack
 
       def process_request(request, input_body, socket)
         env = {}.replace(request)
-        env.delete "HTTP_CONTENT_TYPE"
-        env.delete "HTTP_CONTENT_LENGTH"
         env["HTTP_VERSION"] ||= env["SERVER_PROTOCOL"]
         env["QUERY_STRING"] ||= ""
         env["SCRIPT_NAME"] = ""
