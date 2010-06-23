@@ -50,7 +50,7 @@ module Rack
       }
 
       def self.run(app, options={})
-        new(app, options).listen
+        new(app, options).listen(&block)
       end
 
       def initialize(app, options={})
@@ -62,6 +62,8 @@ module Rack
       def listen
         log "Starting server on #{@host}:#{@port}"
         server = TCPServer.new(@host, @port)
+
+        yield server if block_given?
 
         loop do
           socket = server.accept
@@ -137,7 +139,7 @@ module Rack
             vs.split("\n").each { |v| socket.write("#{k}: #{v}\r\n")}
           end
           socket.write("\r\n")
-          body.each {|s| socket.write(s)}
+          body.each { |s| socket.write(s) }
         ensure
           body.close if body.respond_to? :close
         end
