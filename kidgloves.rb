@@ -49,8 +49,8 @@ module Rack
         505 => 'HTTP Version Not Supported'
       }
 
-      def self.run(app, options=nil)
-        new(app).listen
+      def self.run(app, options=nil, &block)
+        new(app).listen(&block)
       end
 
       def initialize(app)
@@ -60,6 +60,8 @@ module Rack
       def listen
         log 'Starting server on 0.0.0.0:8089'
         server = TCPServer.new('0.0.0.0', 8089)
+
+        yield server if block_given?
 
         loop do
           socket = server.accept
@@ -136,7 +138,7 @@ module Rack
             vs.split("\n").each { |v| socket.write("#{k}: #{v}\r\n")}
           end
           socket.write("\r\n")
-          body.each {|s| socket.write(s)}
+          body.each { |s| socket.write(s) }
         ensure
           body.close if body.respond_to? :close
         end
