@@ -49,7 +49,7 @@ module Rack
         505 => 'HTTP Version Not Supported'
       }
 
-      def self.run(app, options={})
+      def self.run(app, options={}, &block)
         new(app, options).listen(&block)
       end
 
